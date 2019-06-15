@@ -6,3 +6,5 @@ const userController = new UserController();
 
 routes.post('/login', userController.Login)
 routes.post('/signup', userController.Signup)
+
+export default routes;

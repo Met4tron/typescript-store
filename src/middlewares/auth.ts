@@ -3,7 +3,7 @@ import * as config from 'config';
 import { Request, Response, NextFunction } from 'express';
 
 export default (req: Request, res: Response, next: NextFunction) => {
-  const authHeader: string = req.headers.authorization;
+  const authHeader: string | undefined = req.headers.authorization;
 
   if (!authHeader) {
     return res.status(401).send({ message: 'Token not provided' });
@@ -23,9 +23,9 @@ export default (req: Request, res: Response, next: NextFunction) => {
 
   let secret: string = config.get('dev.JWT.SECRET');
 
-  jwt.verify(token, secret, (err, decoded) => {
+  jwt.verify(token, secret, (err: jwt.VerifyErrors, decoded: string | object) => {
     if (err) return res.status(401).send({ message: 'Token invalid' });
-    req.userId = decoded.id;
+    req.userId = (decoded as any).id;
     return next();
   });
 }

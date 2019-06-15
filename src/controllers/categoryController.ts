@@ -23,4 +23,10 @@ class CategoryController {
   public async deleteCategory (req: Request, res: Response) {
     
   }
+
+  public async createCategory (req: Request, res: Response) {
+    
+  }
 }
+
+export default CategoryController;

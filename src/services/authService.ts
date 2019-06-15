@@ -40,7 +40,7 @@ class AuthService {
         email: userRecord.email,
         name: userRecord.name,
       },
-      token: this.generateJWT(userRecord)
+      token: this.generateToken(userRecord)
     }
   }
 
