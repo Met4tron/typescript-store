@@ -1,5 +1,4 @@
 import * as jwt from 'jsonwebtoken';
-import * as config from 'config';
 import { Request, Response, NextFunction } from 'express';
 
 export default (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +20,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     return res.status(401).send({ message: 'Token malformatted' });
   }
 
-  let secret: string = config.get('dev.JWT.SECRET');
+  let secret: string = process.env.JWT_SECRET
 
   jwt.verify(token, secret, (err: jwt.VerifyErrors, decoded: string | object) => {
     if (err) return res.status(401).send({ message: 'Token invalid' });

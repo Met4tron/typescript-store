@@ -1,4 +1,5 @@
-import app from './app';
-import config from 'config';
+import App from './app';
 
-app.listen(config.get('dev.PORT'), () => console.log('Running'));
+const Server = new App();
+
+Server.listen();

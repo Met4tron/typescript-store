@@ -1,11 +1,17 @@
-import * as argon2 from 'argon2';
-import * as config from 'config';
+import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { UserModel, IUser } from '../models/User';
 
 class AuthService {
   public async SignUp (email: string, password: string, name: string, role: string = 'client'): Promise<any> {
-    const passwordHashed = await argon2.hash(password);
+    
+    const userExists = await UserModel.findOne({ email });
+
+    if (userExists) {
+      throw new Error('Email already exist');
+    }
+
+    const passwordHashed = bcrypt.hashSync(password, 10);
 
     const userRecord = await UserModel.create({
       password: passwordHashed,
@@ -28,8 +34,7 @@ class AuthService {
     if (!userRecord) {
       throw new Error('User not found');
     } else {
-      const correctPassword = await argon2.verify(userRecord.password, password);
-
+      const correctPassword = bcrypt.compareSync(password, userRecord.password);
       if (!correctPassword) {
         throw new Error('Incorrect Email/Password');
       }
@@ -49,10 +54,12 @@ class AuthService {
     const data =  {
       _id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      role: user.role
     };
-    const signature: jwt.Secret = config.get('dev.JWT.SECRET');
-    const expiration: string = config.get('dev.JWT.EXPIRES');
+
+    const signature: jwt.Secret = process.env.JWT_SECRET;
+    const expiration: string = process.env.JWT_EXPIRES;
 
     return jwt.sign({ data, }, signature, { expiresIn: expiration });
   }
